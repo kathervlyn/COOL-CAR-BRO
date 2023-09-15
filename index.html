@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .barometer {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(10, 1fr);
+            border: 1px solid;
+            height: 400px;
+            width: 50px;
+            background-color: #ccccccb5;
+        }
+    </style>
+    <style id="pillarHeight"></style>
+
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script>
+        // model
+        let pillarValue = 11; //Søyla starter med en høyde på 10%
+        let kulhet = 0;
+        let meldingsListe = ['Du plukket opp en spoiler',
+            'Du plukket opp noen kule felger',
+            'Du plukket opp ny eksospotte',
+            'Du plukket opp tintede ruter',
+            'Du plukket opp ny lakk',
+            'Du plukket opp nye bøtteseter',
+            'Du plukket opp en turbo',
+            'Du plukket opp terninger i speilet',
+            'Du plukket opp neonlys',
+            'Du plukket opp nytt ratt'];
+
+        const kompishilsener = ['hællæ sjefen!', 'skjera bror', 'heisann kompis'];
+        const riktigHilsen = kompishilsener[Math.floor(Math.random() * kompishilsener.length)]
+
+        // view
+        updateView();
+        updatePillarHeight();
+        function updateView() {
+            document.getElementById('app').innerHTML = /*HTML*/`
+           
+            <h1>Kulhetsfaktor-spillet</h1>
+            <p>Velkommen til Kulhetsfaktor-spillet! Målet er å fylle kulhet meteret helt opp.</p>
+            <button id="kjor">Start spill</button>
+            <button id="leggTil">Legg til på bilen</button>
+            <button id="ignorer">Ignorer</button>
+            <p id="melding"></p>
+            <img src="R.gif" alt="Bilde av en vei" width="1000px" style="float: right; margin-right: calc(50vw - 500px);">
+            
+            <!--Søylen-->
+            <div class="barometer">
+                <div class="pillar">Kulhet</div>
+            </div>
+            `;
+        }
+
+        function updatePillarHeight() {
+            document.getElementById('pillarHeight').innerHTML = /*CSS*/`
+                .pillar {
+                    text-align: center;
+                    background-color: green;
+                    color: white;
+                    grid-column: 1 / 2; grid-row: ${pillarValue} / 11;
+                }
+            `;
+        }
+        updateView();
+
+        // controller
+
+        document.getElementById("kjor").addEventListener("click", kjorVidere);
+        document.getElementById("leggTil").addEventListener("click", leggTilPåBilen);
+        document.getElementById("ignorer").addEventListener("click", ignorer);
+
+        /* function oppdaterKulhet() {
+            document.getElementById("kulhet").textContent = kulhet;
+        } */
+
+        function visMelding(melding) {
+            document.getElementById("melding").textContent = melding;
+        }
+
+        function kjorVidere() {
+            const hendelseType = Math.random();
+            const hendelse = Math.random();
+
+            if (hendelse < 0.4) {
+                const valgtHilsen = prompt("Du har møtt på kompisen din! velg en hilsen : " + kompishilsener.join(", "));
+                //kompis Møte
+                if (valgtHilsen === riktigHilsen) {
+                    changePillarHeight('add');
+                    visMelding("Du hilste riktig! Kompisen din sa:'" + riktigHilsen + "' - Kulhetsfaktor økt!");
+                }
+                else {
+                    changePillarHeight('remove');
+                    visMelding("Du hilste feil! Kompisen din sa: " + riktigHilsen + " Nå ble jeg skuffet");
+                }
+            }
+            else if (hendelse < 0.7 && hendelse > 0.3) {
+                // Ting som kan legges til på bilen
+                const valg = prompt("Du har funnnet en bildel : Hva vil du legge til på bilen?");
+
+                duPlukketOppDel(valg);
+
+            } else {
+                // Andre tilfeldige hendelser
+
+                if (hendelseType < 0.4) {
+                    changePillarHeight('remove');
+                    visMelding('Det er ikke særlig kult å punktere, kompis')
+                }
+
+                else if (hendelseType < 0.7 && hendelseType > 0.3) {
+                    changePillarHeight('add');
+                    visMelding("Du hadde en avslappende kjøretur. Kulhetsfaktor økt litt.")
+
+                } else {
+                    visMelding("Ingenting spesielt skjedde denne gangen.");
+                }
+            }
+
+            //oppdaterKulhet();
+        }
+
+        function leggTilPåBilen() {
+            changePillarHeight('add');
+            visMelding("Du la til noe kult på bilen! Kulhetsfaktor økt!");
+            //oppdaterKulhet();
+        }
+
+        function ignorer() {
+            changePillarHeight('remove');
+            visMelding("Du valgte å ignorere situasjonen. Kulhetsfaktor senket.");
+            //oppdaterKulhet();
+        }
+
+        function changePillarHeight(value) {
+            if (value == 'add') {
+                if (pillarValue == 1) {
+                    alert("Du vant!");
+                    pillarValue = 10;
+                    updatePillarHeight();
+                    return;
+                }
+                pillarValue--;
+            }
+            else if (value == 'remove') {
+                if (pillarValue == 11) return;
+                pillarValue++;
+            }
+            updatePillarHeight();
+        }
+
+        function duPlukketOppDel(valgInput) {
+            let valgI = valgInput;
+            if (valgI == 'spoiler') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[0]);
+            }
+            else if (valgI == 'felger') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[1]);
+            }
+            else if (valgI == 'eksospotte') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[2]);
+            }
+            else if (valgI == 'tintede ruter') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[3]);
+            }
+            else if (valgI == 'lakk') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[4]);
+            }
+            else if (valgI == 'bøtteseter') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[5]);
+            }
+            else if (valgI == 'turbo') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[6]);
+            }
+            else if (valgI == 'terninger i speilet') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[7]);
+            }
+            else if (valgI == 'neonlys') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[8]);
+            }
+            else if (valgI == 'nytt ratt') {
+                changePillarHeight('add');
+                visMelding(meldingsListe[9]);
+            }
+            else {
+                visMelding('du har ikke opgradert bilen');
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>
